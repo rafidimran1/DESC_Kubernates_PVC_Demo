@@ -1,0 +1,39 @@
+# apiVersion tells Kubernetes which API version to use.
+# PersistentVolumeClaim belongs to the core v1 API.
+apiVersion: v1
+
+# kind defines the type of Kubernetes object.
+# Here, we are creating a PersistentVolumeClaim.
+kind: PersistentVolumeClaim
+
+# metadata contains identifying information about the PVC.
+metadata:
+
+  # name is the name of the PVC.
+  # The Pod will later refer to this name.
+  name: web-pvc
+
+  # namespace tells Kubernetes where to create this PVC.
+  # This must match the namespace used by the Pod.
+  namespace: storage-demo
+
+# spec defines the desired configuration of the PVC.
+spec:
+
+  # accessModes define how the volume can be mounted.
+  # ReadWriteOnce means the volume can be mounted as read-write by one node.
+  accessModes:
+    - ReadWriteOnce
+
+  # storageClassName tells Kubernetes which StorageClass to use.
+  # In K3s, local-path is usually available by default.
+  storageClassName: local-path
+
+  # resources defines how much storage we are requesting.
+  resources:
+
+    # requests means: I need at least this amount of storage.
+    requests:
+
+      # This PVC is asking for 1Gi of persistent storage.
+      storage: 1Gi
