@@ -1,0 +1,65 @@
+# apiVersion tells Kubernetes which API version to use.
+# Pod belongs to the core v1 API.
+apiVersion: v1
+
+# kind defines the object type.
+# Here, we are creating a Pod.
+kind: Pod
+
+# metadata contains the name, namespace, and labels of the Pod.
+metadata:
+
+  # name is the name of the Pod.
+  name: nginx-pvc-pod
+
+  # namespace tells Kubernetes where to create this Pod.
+  namespace: storage-demo
+
+  # labels are key-value pairs used to identify/select this Pod.
+  labels:
+
+    # This label will be used by the Service to find this Pod.
+    app: nginx-pvc-demo
+
+# spec defines how the Pod should run.
+spec:
+
+  # containers is the list of containers inside this Pod.
+  containers:
+
+    # name is the container name inside the Pod.
+    - name: nginx
+
+      # image is the container image to run.
+      # nginx:alpine is a lightweight Nginx image.
+      image: nginx:alpine
+
+      # ports documents which port the container listens on.
+      ports:
+
+        # Nginx listens on port 80 by default.
+        - containerPort: 80
+
+      # volumeMounts defines where volumes are mounted inside the container.
+      volumeMounts:
+
+        # name must match the volume name defined below in spec.volumes.
+        - name: web-storage
+
+          # mountPath is the directory inside the container.
+          # Anything written here will be stored in the PVC.
+          # Nginx serves website files from this directory.
+          mountPath: /usr/share/nginx/html
+
+  # volumes defines the volumes available to this Pod.
+  volumes:
+
+    # This is the Pod-level volume name.
+    # It is referenced above in volumeMounts.
+    - name: web-storage
+
+      # persistentVolumeClaim tells Kubernetes that this volume comes from a PVC.
+      persistentVolumeClaim:
+
+        # claimName must match the PVC name created in 02-pvc.yaml.
+        claimName: web-pvc
