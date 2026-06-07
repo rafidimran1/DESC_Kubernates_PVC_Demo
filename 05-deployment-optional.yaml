@@ -1,0 +1,85 @@
+# apiVersion tells Kubernetes which API group/version to use.
+# Deployments belong to apps/v1.
+apiVersion: apps/v1
+
+# kind defines the object type.
+# Here, we are creating a Deployment.
+kind: Deployment
+
+# metadata contains identifying information about the Deployment.
+metadata:
+
+  # name is the Deployment name.
+  name: nginx-pvc-deployment
+
+  # namespace tells Kubernetes where to create the Deployment.
+  namespace: storage-demo
+
+# spec defines the desired state of the Deployment.
+spec:
+
+  # replicas defines how many Pod copies should run.
+  # Keep this 1 because this PVC uses ReadWriteOnce.
+  replicas: 1
+
+  # selector tells the Deployment which Pods it manages.
+  selector:
+
+    # matchLabels must match the labels in template.metadata.labels.
+    matchLabels:
+
+      # This label identifies the Pods managed by this Deployment.
+      app: nginx-pvc-demo
+
+  # template defines the Pod template.
+  # The Deployment creates Pods based on this template.
+  template:
+
+    # metadata for Pods created by the Deployment.
+    metadata:
+
+      # labels assigned to the Pods.
+      labels:
+
+        # This label also matches the Service selector.
+        app: nginx-pvc-demo
+
+    # spec defines the Pod configuration.
+    spec:
+
+      # containers is the list of containers inside each Pod.
+      containers:
+
+        # container name.
+        - name: nginx
+
+          # lightweight Nginx image.
+          image: nginx:alpine
+
+          # container port.
+          ports:
+
+            # Nginx listens on port 80.
+            - containerPort: 80
+
+          # volumeMounts defines where to mount the PVC inside the container.
+          volumeMounts:
+
+            # This name must match the volume name below.
+            - name: web-storage
+
+              # Nginx serves files from this directory.
+              # This directory is backed by the PVC.
+              mountPath: /usr/share/nginx/html
+
+      # volumes defines Pod-level volumes.
+      volumes:
+
+        # volume name used by volumeMounts.
+        - name: web-storage
+
+          # This volume comes from a PVC.
+          persistentVolumeClaim:
+
+            # Name of the PVC created earlier.
+            claimName: web-pvc
