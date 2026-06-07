@@ -1,0 +1,44 @@
+# apiVersion tells Kubernetes which API version to use.
+# Service belongs to the core v1 API.
+apiVersion: v1
+
+# kind defines the object type.
+# Here, we are creating a Service.
+kind: Service
+
+# metadata contains identifying information about the Service.
+metadata:
+
+  # name is the Service name.
+  name: nginx-pvc-service
+
+  # namespace must match the namespace of the Pod.
+  namespace: storage-demo
+
+# spec defines how the Service should behave.
+spec:
+
+  # selector tells the Service which Pods to send traffic to.
+  # It matches Pods with label app: nginx-pvc-demo.
+  selector:
+
+    # This must match the label in 03-pod.yaml.
+    app: nginx-pvc-demo
+
+  # ports defines how traffic reaches the Pod.
+  ports:
+
+    # name is optional but useful for readability.
+    - name: http
+
+      # port is the Service port.
+      # Other cluster resources can reach this Service on port 80.
+      port: 80
+
+      # targetPort is the container port inside the Pod.
+      # Nginx listens on port 80.
+      targetPort: 80
+
+  # ClusterIP exposes the Service only inside the cluster.
+  # For a simple demo, this is enough.
+  type: ClusterIP
